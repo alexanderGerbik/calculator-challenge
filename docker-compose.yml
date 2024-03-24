@@ -1,0 +1,13 @@
+version: "3.4"
+
+services:
+  api:
+    build:
+      context: ./backend
+      target: dev-image
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONPATH: "/src"
+    volumes:
+      - ./backend:/src/

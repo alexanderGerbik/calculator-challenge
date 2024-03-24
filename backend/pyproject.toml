@@ -8,6 +8,8 @@ packages = [{include = "calculator_challenge"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
+flask = "^3.0.2"
+marshmallow = "^3.21.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
