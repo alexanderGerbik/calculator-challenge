@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "calculator-challenge"
+version = "0.1.0"
+description = ""
+authors = ["Alexander Gerbik <alexander.gerbik@gmail.com>"]
+readme = "README.md"
+packages = [{include = "calculator_challenge"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
