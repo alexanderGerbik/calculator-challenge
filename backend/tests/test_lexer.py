@@ -1,5 +1,6 @@
 import pytest
 
+from calculation.exceptions import InvalidExpressionError
 from calculation.lexer import Lexer
 from calculation.nodes import Value, Addition, Subtraction, Multiplication, Division, Power
 
@@ -23,24 +24,24 @@ def test_lexer(input, expected):
 
 
 def test_extra_tokens__raise_error():
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(InvalidExpressionError) as e_info:
         Lexer("3 * (4 + 5) 15").get_ast()
-    assert e_info.value.args[0] == "Invalid expression: unexpected characters after parsed expression"
+    assert str(e_info.value) == "Invalid expression: unexpected characters after parsed expression"
 
 
 def test_no_matching_closing_parenthesis__raise_error():
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(InvalidExpressionError) as e_info:
         Lexer("3 * (4 + 5").get_ast()
-    assert e_info.value.args[0] == "Invalid expression: no matching closing parenthesis"
+    assert str(e_info.value) == "Invalid expression: no matching closing parenthesis"
 
 
 def test_no_matching_opening_parenthesis__raise_error():
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(InvalidExpressionError) as e_info:
         Lexer("3 * 4 + 5)").get_ast()
-    assert e_info.value.args[0] == "Invalid expression: unexpected characters after parsed expression"
+    assert str(e_info.value) == "Invalid expression: unexpected characters after parsed expression"
 
 
 def test_unexpected_operation__raise_error():
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(InvalidExpressionError) as e_info:
         Lexer("3 * ( + 5)").get_ast()
-    assert e_info.value.args[0] == "Invalid expression: expected number at pos 6"
+    assert str(e_info.value) == "Invalid expression: expected number at pos 6"

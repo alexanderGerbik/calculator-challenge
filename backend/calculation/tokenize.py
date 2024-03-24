@@ -1,5 +1,6 @@
 import string
 
+from .exceptions import InvalidExpressionError
 from .tokens import CharToken, Number
 
 DIGITS = set(string.digits)
@@ -45,7 +46,7 @@ class Tokenizer:
             return token
         token = self._try_parse_number()
         if not token:
-            raise ValueError(f"Unexpected character: '{self._current_char}'.")
+            raise InvalidExpressionError(f"unexpected character '{self._current_char}'.")
         self._skip_whitespace()
         return token
 
@@ -55,7 +56,7 @@ class Tokenizer:
             self._pos += 1
             fractional_part = self._try_parse_digits()
             if not integer_part and not fractional_part:
-                raise ValueError("No sole '.' is allowed. Number should contain either integer or fractional part")
+                raise InvalidExpressionError("no sole '.' is allowed, number should contain either integer or fractional part")
             return Number(float(f"{integer_part}.{fractional_part}"))
         return Number(int(f"{integer_part}")) if integer_part else None
 

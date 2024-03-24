@@ -2,7 +2,7 @@ from flask import (
     Blueprint, request
 )
 
-from calculation import evaluate
+from calculation import evaluate, InvalidExpressionError
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -13,5 +13,8 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 def evaluate_expression():
     data = request.json
     expression = data["expression"]
-    result = evaluate(expression)
+    try:
+        result = evaluate(expression)
+    except InvalidExpressionError as e:
+        return ({"detail": str(e)}, 400)
     return {"result": result}

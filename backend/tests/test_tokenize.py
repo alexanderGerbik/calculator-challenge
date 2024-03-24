@@ -1,5 +1,6 @@
 import pytest
 
+from calculation.exceptions import InvalidExpressionError
 from calculation.tokens import Plus, Number, Caret, Slash, LeftPar, RightPar, Minus, Asterisk
 from calculation.tokenize import Tokenizer
 
@@ -21,15 +22,15 @@ def test_tokenize(input, expected):
 
 
 def test_improper_float__raise_error():
-    with pytest.raises(ValueError) as e_info:
+    with pytest.raises(InvalidExpressionError) as e_info:
         list(Tokenizer("."))
-    assert e_info.value.args[0] == "No sole '.' is allowed. Number should contain either integer or fractional part"
+    assert str(e_info.value) == "Invalid expression: no sole '.' is allowed, number should contain either integer or fractional part"
 
 
 def test_unknown_character__raise_error():
-    with pytest.raises(ValueError) as e_info:
+    with pytest.raises(InvalidExpressionError) as e_info:
         list(Tokenizer("3 - 5 % 7"))
-    assert e_info.value.args[0] == f"Unexpected character: '%'."
+    assert str(e_info.value) == f"Invalid expression: unexpected character '%'."
 
 
 def test_tokenize_lookahead():
