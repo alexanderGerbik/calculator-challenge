@@ -1,6 +1,17 @@
 version: "3.4"
 
 services:
+  web-app:
+    build:
+      context: ./backend
+      target: dev-image
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/frontend/
+    entrypoint:  ["/usr/local/bin/python3"]
+    command: ["-m", "http.server", "--directory", "/frontend/","8080"]
+
   api:
     build:
       context: ./backend

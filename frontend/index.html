@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="root"></div>
+</body>
+<!-- This setup is not suitable for production. -->
+<!-- Only use it in development! -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.7.0/dist/es-module-shims.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react?dev",
+    "react-dom/client": "https://esm.sh/react-dom/client?dev"
+  }
+}
+</script>
+<script type="text/babel" data-type="module">
+import React, { StrictMode, useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const EVALUATE_ENDPOINT = "http://localhost:8000/api/evaluate";
+
+function App() {
+  const [complexInput, setComplexInput] = useState(false);
+  const [expression, setExpression] = useState("");
+  return (
+    <div>
+      <h1>Calculator</h1>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={complexInput}
+            onChange={() => {
+              setComplexInput(!complexInput);
+            }}
+          />
+          Type in arbitrary expression
+        </label>
+      </div>
+
+      {complexInput ? (
+        <ComplexExpressionInput onChange={setExpression} />
+      ) : (
+        <SimpleExpressionInput onChange={setExpression} />
+      )}
+      <Calculator expression={expression} />
+    </div>
+  );
+}
+
+function Calculator({ expression }) {
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setResult(null);
+    setError(null);
+  }, [expression]);
+
+  const triggerCalculation = () => {
+    setIsLoading(true);
+    fetch(EVALUATE_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ expression }),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (response.status === 400) {
+          setError(data.detail);
+        } else if (response.ok) {
+          setResult(data.result);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  return (
+    <>
+      ={result === null ? "???" : result}
+      <button onClick={triggerCalculation} disabled={isLoading}>
+        {isLoading ? "Calculating..." : "Calculate"}
+      </button>
+      {error && <div style={{ color: "red" }}>{error}</div>}
+    </>
+  );
+}
+
+function SimpleExpressionInput({ onChange }) {
+  const [leftOp, setLeftOp] = useState(0);
+  const [rightOp, setRightOp] = useState(0);
+  const [operation, setOperation] = useState("+");
+  const expression = `${leftOp} ${operation} ${rightOp}`;
+  useEffect(() => {
+    onChange(expression);
+  }, [expression]);
+  return (
+    <>
+      <input
+        type="number"
+        value={leftOp}
+        onChange={(e) => setLeftOp(e.target.value)}
+      />
+      <select value={operation} onChange={(e) => setOperation(e.target.value)}>
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="/">/</option>
+        <option value="*">*</option>
+      </select>
+      <input
+        type="number"
+        value={rightOp}
+        onChange={(e) => setRightOp(e.target.value)}
+      />{" "}
+    </>
+  );
+}
+
+function ComplexExpressionInput({ onChange }) {
+  const [expression, setExpression] = useState("");
+  useEffect(() => {
+    onChange(expression);
+  }, []);
+  const handleChange = (e) => {
+    setExpression(e.target.value);
+    onChange(e.target.value);
+  };
+  return (
+    <>
+      <input type="text" value={expression} onChange={handleChange} />
+    </>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+</script>
+</html>
