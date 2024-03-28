@@ -45,6 +45,10 @@ class Slash(CharToken):
     char = "/"
 
 
+class Percent(CharToken):
+    char = "%"
+
+
 class Caret(CharToken):
     char = "^"
 

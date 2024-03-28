@@ -26,7 +26,7 @@ def test_valid_expression__result_is_provided(client):
     ("3 * 4 + )5", "Invalid expression: expected number at pos 8"),
     ("3 * ( + 5)", "Invalid expression: expected number at pos 6"),
     (".", "Invalid expression: no sole '.' is allowed, number should contain either integer or fractional part"),
-    ("3 - 5 % 7", f"Invalid expression: unexpected character '%'."),
+    ("3 - 5 # 7", f"Invalid expression: unexpected character '#'."),
 ])
 def test_invalid_expression__detailed_error(client, expression, expected_detail):
     response = client.post("/api/evaluate", json={"expression": expression})

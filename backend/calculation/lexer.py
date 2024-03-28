@@ -10,6 +10,7 @@ expr
 term
     : term '*' power
     | term '/' power
+    | term '%' power
     | power
     ;
 
@@ -29,6 +30,15 @@ from .tokenize import Tokenizer
 from . import tokens, nodes
 
 
+NODE_BY_TOKEN = {
+    tokens.Plus: nodes.Addition,
+    tokens.Minus: nodes.Subtraction,
+    tokens.Asterisk: nodes.Multiplication,
+    tokens.Slash: nodes.Division,
+    tokens.Percent: nodes.Mod,
+}
+
+
 class Lexer(object):
     def __init__(self, input):
         self._tokenizer = Tokenizer(input)
@@ -44,7 +54,7 @@ class Lexer(object):
         # + and - are left-associative
         while isinstance(self._tokenizer.peek(), (tokens.Minus, tokens.Plus)):
             op_token = self._tokenizer.get_next_token()
-            op = nodes.Addition if isinstance(op_token, tokens.Plus) else nodes.Subtraction
+            op = NODE_BY_TOKEN[type(op_token)]
             rhs = self._term()
             rv = op(rv, rhs)
         return rv
@@ -52,9 +62,9 @@ class Lexer(object):
     def _term(self):
         rv = self._power()
         # * and / are left-associative
-        while isinstance(self._tokenizer.peek(), (tokens.Asterisk, tokens.Slash)):
+        while isinstance(self._tokenizer.peek(), (tokens.Asterisk, tokens.Slash, tokens.Percent)):
             op_token = self._tokenizer.get_next_token()
-            op = nodes.Multiplication if isinstance(op_token, tokens.Asterisk) else nodes.Division
+            op = NODE_BY_TOKEN[type(op_token)]
             rhs = self._power()
             rv = op(rv, rhs)
         return rv

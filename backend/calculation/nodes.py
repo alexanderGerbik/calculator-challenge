@@ -45,6 +45,12 @@ class Division(BinaryOperation):
         return a / b
 
 
+class Mod(BinaryOperation):
+    def calculate(self):
+        a, b = super().calculate()
+        return a % b
+
+
 class Power(BinaryOperation):
     def calculate(self):
         a, b = super().calculate()

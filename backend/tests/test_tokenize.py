@@ -29,8 +29,8 @@ def test_improper_float__raise_error():
 
 def test_unknown_character__raise_error():
     with pytest.raises(InvalidExpressionError) as e_info:
-        list(Tokenizer("3 - 5 % 7"))
-    assert str(e_info.value) == f"Invalid expression: unexpected character '%'."
+        list(Tokenizer("3 - 5 # 7"))
+    assert str(e_info.value) == f"Invalid expression: unexpected character '#'."
 
 
 def test_tokenize_lookahead():
