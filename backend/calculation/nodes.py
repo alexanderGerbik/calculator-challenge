@@ -17,25 +17,38 @@ class BinaryOperation(Node):
             and self.right_operand == other.right_operand
         )
 
+    def calculate(self):
+        return self.left_operand.calculate(), self.right_operand.calculate()
+
 
 class Addition(BinaryOperation):
-    pass
+    def calculate(self):
+        a, b = super().calculate()
+        return a + b
 
 
 class Subtraction(BinaryOperation):
-    pass
+    def calculate(self):
+        a, b = super().calculate()
+        return a - b
 
 
 class Multiplication(BinaryOperation):
-    pass
+    def calculate(self):
+        a, b = super().calculate()
+        return a * b
 
 
 class Division(BinaryOperation):
-    pass
+    def calculate(self):
+        a, b = super().calculate()
+        return a / b
 
 
 class Power(BinaryOperation):
-    pass
+    def calculate(self):
+        a, b = super().calculate()
+        return a ** b
 
 
 class Negation(Node):
@@ -51,6 +64,10 @@ class Negation(Node):
             and self.operand == other.operand
         )
 
+    def calculate(self):
+        return -self.operand.calculate()
+
+
 
 class Value(Node):
     def __init__(self, value):
@@ -64,3 +81,6 @@ class Value(Node):
             type(self) == type(other)
             and self.value == other.value
         )
+
+    def calculate(self):
+        return self.value
