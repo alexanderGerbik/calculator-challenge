@@ -66,6 +66,8 @@ class Lexer(object):
         self._member(rv)
         while isinstance(self._tokenizer.peek(), tokens.Comma):
             self._tokenizer.get_next_token()
+            if isinstance(self._tokenizer.peek(), tokens.RightBrace):
+                break
             self._member(rv)
         self._assert_pop(tokens.RightBrace)
         return rv
@@ -82,6 +84,8 @@ class Lexer(object):
         rv.append(self._value())
         while isinstance(self._tokenizer.peek(), tokens.Comma):
             self._tokenizer.get_next_token()
+            if isinstance(self._tokenizer.peek(), tokens.RightBracket):
+                break
             rv.append(self._value())
         self._assert_pop(tokens.RightBracket)
         return rv

@@ -21,6 +21,8 @@ from parse_json.tokenize import Tokenizer
 @pytest.mark.parametrize("input,expected", [
     ("""{"qwe": [true, false, 13], "asd": null}""", {"qwe": [True, False, 13], "asd": None}),
     ("""[true, false, [true, false, 13]]""", [True, False, [True, False, 13]]),
+    ("""[true, false,]""", [True, False]),
+    ("""{"qwe": true, "asd": null,}""", {"qwe": True, "asd": None}),
 ])
 def test_parse_json(input, expected):
     assert parse_json(input) == expected
