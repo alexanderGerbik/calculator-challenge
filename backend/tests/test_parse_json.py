@@ -23,6 +23,12 @@ from parse_json.tokenize import Tokenizer
     ("""[true, false, [true, false, 13]]""", [True, False, [True, False, 13]]),
     ("""[true, false,]""", [True, False]),
     ("""{"qwe": true, "asd": null,}""", {"qwe": True, "asd": None}),
+    ("""[true, /* some \n multi-line \n comment */ false]""", [True, False]),
+    ("""[true, // some comment \n false]""", [True, False]),
+    ("""[true, /* some \n multi-line \n comment *//* some \n multi-line \n comment */ false]""", [True, False]),
+    ("""[true, // some comment \n  // some comment \n // some comment \n false]""", [True, False]),
+    ("""[true, // some comment \n/* some \n multi-line \n comment */ false]""", [True, False]),
+    ("""[true, false] // some comment""", [True, False]),
 ])
 def test_parse_json(input, expected):
     assert parse_json(input) == expected
@@ -60,6 +66,12 @@ def test_improper_float__raise_error():
     with pytest.raises(ParseError) as e_info:
         list(Tokenizer("23."))
     assert str(e_info.value) == "Parse error: There should be a fractional part after dot."
+
+
+def test_improper_comment__raise_error():
+    with pytest.raises(ParseError) as e_info:
+        parse_json("[true, / some comment \n false]")
+    assert str(e_info.value) == "Parse error: unexpected character '/'."
 
 
 def test_improper_exponent__raise_error():

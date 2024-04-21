@@ -130,8 +130,34 @@ class Tokenizer:
         return result
 
     def _skip_whitespace(self):
-        while not self and self._current_char in WHITESPACE:
+        while True:
+            while not self and self._current_char in WHITESPACE:
+                self._pos += 1
+            a = self._skip_comment()
+            if not a:
+                break
+
+    def _skip_comment(self):
+        if not self and self._current_char == "/":
             self._pos += 1
+            if not self and self._current_char == "/":
+                self._pos += 1
+                while not self and self._current_char != "\n":
+                    self._pos += 1
+                if not self:
+                    self._pos += 1
+                return True
+            elif not self and self._current_char == "*":
+                self._pos += 2
+                while not self and (self._input[self._pos-1] != "*" or self._current_char != "/"):
+                    self._pos += 1
+                if not self:
+                    self._pos += 1
+                return True
+            else:
+                self._pos -= 1
+                raise ParseError(f"unexpected character '{self._current_char}'.")
+        return False
 
     def __bool__(self):
         return self._pos >= len(self._input)
